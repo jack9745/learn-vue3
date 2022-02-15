@@ -3,13 +3,12 @@
     <ul class="manage-wrapper">
       <li class="" v-for="(item, index) in appList" :key="index">
         <div class="title">
-          <span>{{item.projectName}}</span>
+          <span>{{ item.projectName }}</span>
         </div>
         <ul class="app-wrapper">
-          <li v-for="(appInfo,jIndex) in item.projectApps || []" :key="jIndex">
+          <li v-for="(appInfo, jIndex) in item.projectApps || []" :key="jIndex">
             <app-item :appInfo="appInfo"></app-item>
           </li>
-         
         </ul>
       </li>
     </ul>
@@ -17,7 +16,7 @@
 </template>
 <script>
 // eslint-disable-next-line no-unused-vars
-import { defineComponent, onMounted, ref,reactive } from "vue";
+import { defineComponent, onMounted, ref, reactive } from "vue";
 import appListJSON from "@/mock/appList";
 import AppItem from "./AppItem.vue";
 export default defineComponent({
@@ -43,8 +42,8 @@ export default defineComponent({
     onMounted(async () => {
       console.log("这里是onMounted钩子");
       const result = await getAppList();
-      if(Number(result.state) ===1){
-        appList.value = result.data.validProject
+      if (Number(result.state) === 1) {
+        appList.value = result.data.validProject;
       }
       console.log("appList", appList.value);
     });
@@ -64,6 +63,17 @@ export default defineComponent({
   .app-wrapper {
     display: flex;
     flex-wrap: wrap;
+    & > li {
+      margin: 0 10px;
+      // transform: translateY(0px);
+      transition: transform 0.2s linear;
+      background-color: white;
+      &:hover {
+        cursor: pointer;
+        // transform: translateY(-10px);
+        background-color: #f5f5f5;
+      }
+    }
   }
 }
 </style>

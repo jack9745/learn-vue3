@@ -1,10 +1,10 @@
 <template>
-  <div
-    class="app-item"
-    @click="goToApp"
-    @mouseenter="appMouseenter"
-    @mouseleave="appMouseleave"
-  >
+  <div class="app-item" @mouseleave="appMouseleave" @mouseenter="appMouseenter">
+    <!-- 单击三个点的菜单 dialog -->
+    <div class="app-menu-wrapper" id="appMenuWraper" v-if="showOperateDialog">
+      <app-menu></app-menu>
+    </div>
+
     <el-icon v-if="showStar" class="star common-icon"><star-filled /></el-icon>
     <el-icon
       @click.stop="handleShowOperateDialog"
@@ -18,17 +18,12 @@
       </li>
       <li>{{ appInfo.name }}</li>
     </ul>
-
-    <!-- 单击三个点的菜单 dialog -->
-    <div class="app-menu-wrapper" v-if="showOperateDialog">
-      <app-menu></app-menu>
-    </div>
   </div>
 </template>
 <script>
 import { MoreFilled, StarFilled } from "@element-plus/icons-vue";
 import { ElIcon } from "element-plus";
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onMounted, nextTick } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import AppMenu from "./AppMenu.vue";
 
@@ -53,6 +48,7 @@ export default defineComponent({
 
   // eslint-disable-next-line no-unused-vars
   setup(props, context) {
+    console.log("context", context);
     const showStar = ref(false);
     const showOperate = ref(false);
     // 显示菜单弹窗
@@ -60,14 +56,17 @@ export default defineComponent({
     const router = useRouter();
     const route = useRoute();
     console.log(route);
+
     function appMouseenter() {
       showStar.value = true;
       showOperate.value = true;
+      console.log("鼠标进入事件");
     }
 
     function appMouseleave() {
       showStar.value = false;
       showOperate.value = false;
+      console.log("鼠标离开事件");
     }
     const goToApp = () => {
       router.push({
@@ -76,7 +75,14 @@ export default defineComponent({
     };
     const handleShowOperateDialog = () => {
       showOperateDialog.value = true;
+      nextTick(() => {
+        let dom = document.getElementById("appMenuWraper");
+        console.log("dom", dom);
+        console.log("domOffsetParent", dom.offsetParent);
+      });
     };
+    onMounted(() => {});
+
     return {
       showOperate,
       showStar,
@@ -108,21 +114,13 @@ export default defineComponent({
   left: 5px;
 }
 .app-item {
+  // 父元素如果有transform 属性，可能对子元素的绝对定位有影响，
+  // 子元素可能被其他元素覆盖着
   position: relative;
   padding-top: 5px;
-  width: 132px;
+  width: 140px;
   height: 160px;
-  margin-right: 20px;
-  margin-bottom: 10px;
-  transform: translateY(0px);
-  transition: transform 0.2s linear;
-  background-color: white;
   border-radius: 4px;
-  &:hover {
-    cursor: pointer;
-    transform: translateY(-10px);
-    background-color: #f5f5f5;
-  }
 
   .icon-wrapper {
     display: flex;
@@ -141,12 +139,15 @@ export default defineComponent({
       justify-content: center;
     }
   }
+}
+</style>
 
-  .app-menu-wrapper {
-    position: absolute;
-    right: -200px;
-    top: 0;
-    z-index: 100;
-  }
+<style scoped>
+/* 这里的样式还不能写在less中，不然找不到 */
+.app-menu-wrapper {
+  position: absolute;
+  right: -181px;
+  top: 0px;
+  z-index: 10000;
 }
 </style>
